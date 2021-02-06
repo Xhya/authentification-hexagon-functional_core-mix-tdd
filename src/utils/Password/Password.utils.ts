@@ -10,7 +10,7 @@ export function getHashedPassword({ password }): Promise<string> {
     });
 }
 
-export function getAreCredentialsValid({ suggestedPassword, userPassword }): Promise<boolean> {
+export function checkAreCredentialsValid({ suggestedPassword, userPassword }): Promise<boolean> {
     return new Promise((resolve, reject) => {
         bcrypt
             .compare(suggestedPassword, userPassword)

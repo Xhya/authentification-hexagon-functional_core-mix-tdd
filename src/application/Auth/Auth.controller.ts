@@ -1,21 +1,13 @@
-import { getAreCredentialsValid, getToken } from '../../utils/Password/Password.utils';
+import { checkAreCredentialsValid, getToken } from '../../utils/Password/Password.utils';
 import ErrorHandling from '../../utils/ErrorHandling/errorHandling.utils';
 import UserRepository from '../../domain/User/User.repository';
-import { UserType } from '../../domain/User/User.domain';
 import IAuth from './Auth.interface';
 
 export default class AuthController implements IAuth {
     private _userRepository: UserRepository;
 
-    constructor(userRepository: UserRepository) {
+    constructor({ userRepository }: { userRepository: UserRepository }) {
         this._userRepository = userRepository;
-    }
-
-    async signInUser({ user }: { user: UserType }): Promise<string> {
-        ErrorHandling.checkNotUndefinedParameters({ user });
-        ErrorHandling.checkNotNullParameters({ user });
-
-        return this.signInWithUsernameAndPassword({ username: user.username, password: user.password })
     }
 
     async signInWithUsernameAndPassword({ username, password }: { username: string, password: string }): Promise<string> {
@@ -24,11 +16,10 @@ export default class AuthController implements IAuth {
 
         const user = await this._userRepository.getUserByUsername(username);
 
-        const areCredentialsValid = await getAreCredentialsValid({ suggestedPassword: password, userPassword: user.password})
-
-        if (areCredentialsValid) {
+        try {
+            await checkAreCredentialsValid({ suggestedPassword: password, userPassword: user.password })
             return getToken({ userId: user.id })
-        } else {
+        } catch (error) {
             throw new Error('Invalid credentials')
         }
     }

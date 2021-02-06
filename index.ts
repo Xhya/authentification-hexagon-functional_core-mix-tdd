@@ -5,6 +5,8 @@ import Server from './src/_ui/Server';
 
 import httpHeader from './config/webserver/http-headers.config';
 
+import AuthRouter from './src/_ui/routers/Auth.router'
+
 require('dotenv').config();
 
 class App {
@@ -15,7 +17,9 @@ class App {
         try {
             this.server = new Server({
                 port: process.env.SERVER_PORT,
-                routers: [],
+                routers: [
+                    AuthRouter
+                ],
                 middlewares: [bodyParser.json(), bodyParser.urlencoded({ extended: true }), loggerMiddleware],
                 httpHeader,
                 serverBaseUrl: process.env.SERVER_BASE_ROUTE,
